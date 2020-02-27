@@ -1,26 +1,47 @@
 #!/bin/bash -x
-printf "Assign letter to player.\n"
-#VARIABLES
-count=0
+printf "Added feature for player turn.\n"
 #CONSTANTS
 PLAYER=0
 COMPUTER=1
 DOT=0
 CROSS=1
 declare -a displayBoard
-displayBoard=(" " " " " " " " " " " " " " " " " ")
+display=(" " " " " " " " " " " " " " " " " ")
 
+#DISPLAY THE ARRAY IN TICTACTOE BOARD
 function displayBoard(){
-for(( index=0; index<${#displayBoard[@]}; index++))
-do
-	printf " ${displayBoard[$index]} | "
-	count=$((count+1))
-	if(($count%3==0 && count!=9))
+	row=0
+	column=0
+	for(( index=0; index<${#display[@]}; index++))
+	do
+		printf " ${display[$index]} "
+		column=$((column+1))
+		row=$((row+1))
+		if((row%3!=0))
+		then
+			printf " | "
+		fi
+		if(($column%3==0 && $column!=9))
+		then
+			printf "\n----+-----+----\n"
+		fi
+	done
+	printf "\n"
+}
+
+#LOGIC FOR PLAYER TURN
+function playerTurn(){
+	playerLetter=$1
+	printf "Enter index between 0 to 8 you want to chose\n"
+	read response
+	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
+	if [[ "${display[$response]}"!=X || "${display[$response]}"!=O ]]
 	then
-		printf "\n---+----+----+----\n"
+		display[$response]="$playerLetter"
+	else
+		playerTurn $playerLetter
 	fi
-done
-printf "\n"
+	displayBoard
 }
 
 displayBoard
@@ -42,3 +63,4 @@ case $checkChance in
 	printf "computerChance\n"
 	;;
 esac
+playerTurn $playerLetter
