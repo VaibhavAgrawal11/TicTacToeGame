@@ -1,8 +1,14 @@
 #!/bin/bash -x
-printf "Display fresh board\n"
+printf "Assign letter to player.\n"
+#VARIABLES
 count=0
+#CONSTANTS
+DOT=0
+CROSS=1
 declare -a displayBoard
 displayBoard=(" " " " " " " " " " " " " " " " " ")
+
+function displayBoard(){
 for(( index=0; index<${#displayBoard[@]}; index++))
 do
 	printf " ${displayBoard[$index]} | "
@@ -13,3 +19,15 @@ do
 	fi
 done
 printf "\n"
+}
+
+displayBoard
+random=$((RANDOM%2))
+case $random in
+	$DOT)
+	playerLetter=O
+	;;
+	$CROSS)
+	playerLetter=X
+	;;
+esac
