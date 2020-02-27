@@ -3,6 +3,8 @@ printf "Assign letter to player.\n"
 #VARIABLES
 count=0
 #CONSTANTS
+PLAYER=0
+COMPUTER=1
 DOT=0
 CROSS=1
 declare -a displayBoard
@@ -29,5 +31,14 @@ case $random in
 	;;
 	$CROSS)
 	playerLetter=X
+	;;
+esac
+checkChance=$((RANDOM%2))
+case $checkChance in
+	$PLAYER)
+	printf "playerChance\n"
+	;;
+	$COMPUTER)
+	printf "computerChance\n"
 	;;
 esac
