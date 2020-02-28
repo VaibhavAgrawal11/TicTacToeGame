@@ -1,5 +1,5 @@
 #!/bin/bash -x
-printf "Added feature to check win / draw or change.\n"
+printf "Added feature to play computer like player \n"
 #CONSTANTS
 PLAYER=0
 COMPUTER=1
@@ -26,7 +26,7 @@ function displayBoard(){
 			printf "\n----+-----+----\n"
 		fi
 	done
-	printf "\n"
+	printf "\n\n"
 }
 
 #LOGIC TO ASSIGN LETTER
@@ -51,10 +51,10 @@ function firstChance()
 	checkChance=$((RANDOM%2))
 	case $checkChance in
    	$PLAYER)
-   	printf "playerChance\n"
+   	echo "playerChance"
    	;;
    	$COMPUTER)
-   	printf "computerChance\n"
+   	echo "computerChance"
    	;;
 	esac
 }
@@ -65,13 +65,14 @@ function playerTurn(){
 	printf "Enter index between 0 to 8 you want to chose\n"
 	read response
 	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
-	if [[ "${display[$response]}"!=X || "${display[$response]}"!=O ]]
+	if [ "${display[$response]}" != X ] && [ "${display[$response]}" != O ]
 	then
 		display[$response]="$playerLetter"
+		displayBoard
 	else
+		printf "Invalid input\n"
 		playerTurn $playerLetter
 	fi
-	displayBoard
 }
 
 #LOGIC TO CHECK THE WINNER ON EVERY MOVE
@@ -108,7 +109,7 @@ function checkWin(){
 		flag=0
 		for(( index=0; index<${#display[@]}; index++))
 		do
-			if [[ "${display[$index]}"!=X || "${display[$index]}"!=O ]]
+			if [ "${display[$index]}" != X ] && [ "${display[$index]}" != O ]
 			then
 				flag=1
 			fi
@@ -123,9 +124,62 @@ fi
 echo $result
 }
 
+#COMPUTER WIN RANDOMLY PLAY ON ITS TURN
+function computerTurn()
+{
+	computerLetter=$1
+   response=$((RANDOM%9))
+   #IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
+   if [ "${display[$response]}" != X ] && [ "${display[$response]}" != O ]
+   then
+		echo "Computer turn: "
+      display[$response]="$computerLetter"
+		displayBoard
+
+   else
+      computerTurn $computerLetter
+   fi
+}
+
 displayBoard
 assignLetter
 chance="$(firstChance)"
-echo "$chance"
-playerTurn $playerLetter
-checkWin $playerLetter
+count=0
+if [ "$chance" = "computerChance" ]
+then
+while ((0==0 ))
+do
+	computerTurn $computerLetter
+	result="$(checkWin $computerLetter)"
+	if [[ $result = "wins" ]] || [[ $result = "draw" ]]
+   then
+      printf " Computer $result\n"
+      break 
+   fi
+	playerTurn $playerLetter
+	result="$(checkWin $playerLetter)"
+	if [ $result = "wins" ] || [ $result = "draw" ]
+   then
+      printf " Player $result\n"
+      break 
+   fi
+done
+else
+while (( 0==0 ))
+do
+	playerTurn $playerLetter
+	result="$(checkWin $playerLetter)"
+	if [ $result = "wins" ] || [ $result = "draw" ]
+	then
+		printf " Player $result\n"
+		break
+	fi
+	computerTurn $computerLetter
+	result="$(checkWin $computerLetter)"
+	if [ $result = "wins" ] || [ $result = "draw" ]
+   then
+      printf " Computer $result\n"
+      break 
+   fi
+done
+fi
