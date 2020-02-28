@@ -144,42 +144,31 @@ function computerTurn()
 displayBoard
 assignLetter
 chance="$(firstChance)"
-count=0
+flag=0
 if [ "$chance" = "computerChance" ]
 then
+   flag=1
+fi
 while ((0==0 ))
 do
-	computerTurn $computerLetter
-	result="$(checkWin $computerLetter)"
-	if [[ $result = "wins" ]] || [[ $result = "draw" ]]
+   if(( flag%2==0 ))
    then
-      printf " Computer $result\n"
-      break 
+      computerTurn $computerLetter
+      result="$(checkWin $computerLetter)"
+      if [[ $result = "wins" ]] || [[ $result = "draw" ]]
+      then
+         printf " Computer $result\n"
+         break 
+      fi
+   else
+      playerTurn $playerLetter
+      result="$(checkWin $playerLetter)"
+      if [ $result = "wins" ] || [ $result = "draw" ]
+      then
+         printf " Player $result\n"
+         break 
+      fi
    fi
-	playerTurn $playerLetter
-	result="$(checkWin $playerLetter)"
-	if [ $result = "wins" ] || [ $result = "draw" ]
-   then
-      printf " Player $result\n"
-      break 
-   fi
+   flag=$((flag+1))
 done
-else
-while (( 0==0 ))
-do
-	playerTurn $playerLetter
-	result="$(checkWin $playerLetter)"
-	if [ $result = "wins" ] || [ $result = "draw" ]
-	then
-		printf " Player $result\n"
-		break
-	fi
-	computerTurn $computerLetter
-	result="$(checkWin $computerLetter)"
-	if [ $result = "wins" ] || [ $result = "draw" ]
-   then
-      printf " Computer $result\n"
-      break 
-   fi
-done
-fi
+
