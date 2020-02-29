@@ -299,39 +299,62 @@ function blockPlayerWin()
 	fi
 }
 
+#FILLING CORNERS RANDOMLY
 function fillCorners()
 {
-	letter=$1
+	local letter=$1
 	compPlay=0
+	randomCorner=$((RANDOM%4))
+	case $randomCorner in
+	0)
 	if [[ ${display[0]} == $IS_EMPTY ]]
 	then
 		display[0]=$computerLetter
       compPlay=1
       return
-	elif [[ ${display[2]} == $IS_EMPTY ]]
+	else
+		fillCorners $letter
+	fi
+	;;
+	1)
+	if [[ ${display[2]} == $IS_EMPTY ]]
    then
       display[2]=$computerLetter
       compPlay=1
       return
-	 elif [[ ${display[6]} == $IS_EMPTY ]]
+	else
+      fillCorners $letter
+   fi 
+   ;;
+	2)
+	if [[ ${display[6]} == $IS_EMPTY ]]
    then
       display[6]=$computerLetter
       compPlay=1
       return
-	 elif [[ ${display[8]} == $IS_EMPTY ]]
+	else
+      fillCorners $letter
+   fi 
+	;;
+	3)
+	if [[ ${display[8]} == $IS_EMPTY ]]
    then
       display[2]=$computerLetter
       compPlay=1
       return
-	fi
+	else
+      fillCorners $letter
+   fi 
+	esac
 }
 
-#COMPUTER WIN RANDOMLY PLAY ON ITS TURN
+#COMPUTER TURN
 function computerTurn()
 {
 	computerLetter=$1
 	playerLetter=$2
 	compPlay=0
+	echo "Computer turn: "
 	checkWiningMove $computerLetter
 	if(($compPlay==0))
 	then
@@ -343,8 +366,7 @@ function computerTurn()
 	fi
 	if(($compPlay==0))
 	then
-		read response
-   	#response=$((RANDOM%9))
+   	response=$((RANDOM%9))
    	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
    	if [ "${display[$response]}" != X ] && [ "${display[$response]}" != O ]
    	then
