@@ -1,5 +1,5 @@
 #!/bin/bash -x
-printf "Added feature that computer will check player winnig move and block it. \n"
+printf "Added feature that computer will check for corners and fill them. \n"
 #CONSTANTS
 PLAYER=0
 COMPUTER=1
@@ -129,63 +129,14 @@ fi
 echo $result
 }
 
-#LOGIC TO CHECK THE WINNER ON EVERY MOVE
-function checkWin(){
-	letter=$1
-	if [ "${display[0]}${display[1]}${display[2]}" = "$letter$letter$letter" ];
- 	then
-		result="wins"
-	elif [ "${display[3]}${display[4]}${display[5]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[6]}${display[7]}${display[8]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[0]}${display[3]}${display[6]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[1]}${display[4]}${display[7]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[2]}${display[5]}${display[8]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[0]}${display[3]}${display[6]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[0]}${display[4]}${display[8]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	elif [ "${display[2]}${display[4]}${display[6]}" = "$letter$letter$letter" ]
-   then
-      result="wins"
-	else
-		flag=0
-		for(( index=0; index<${#display[@]}; index++))
-		do
-			if [ "${display[$index]}" != X ] && [ "${display[$index]}" != O ]
-			then
-				flag=1
-			fi
-		done
-		if(($flag==0))
-		then
-			result="draw"
-		else
-			result="change"
-		fi
-fi
-echo $result
-}
-
 #CHECKING IF COMPUTER CAN WIN NEXT MOVE
 function checkWiningMove()
 {
 	local letter=$1
 	index=0
+	#CHECKING FOR ROWS
 	while(($index<8))
 	do
-		#CHECKING FOR ROWS
 		if [[ ${display[$index]} == $letter && ${display[$((index+1))]} == $letter && ${display[$((index+2))]} == $IS_EMPTY ]]
    	then
 			display[$((index+2))]=$letter
@@ -201,8 +152,14 @@ function checkWiningMove()
          display[$index]=$letter
          compPlay=1
          return
-		#CHECKING FOR COLUMNS
-		elif [[ ${display[$index]} == $letter && ${display[$((index+3))]} == $letter && ${display[$((index+6))]} == $IS_EMPTY ]]
+		fi
+		index=$((index+3))
+	done
+	index=0
+	#CHECKING FOR COLUMNS
+	while(($index<8))
+   do
+		if [[ ${display[$index]} == $letter && ${display[$((index+3))]} == $letter && ${display[$((index+6))]} == $IS_EMPTY ]]
       then
          display[$((index+6))]=$letter
          compPlay=1
@@ -218,7 +175,7 @@ function checkWiningMove()
          compPlay=1
          return
 		fi
-		index=$((index+3))
+		index=$((index+1))
 	done
 	#CHECKING FOR PRIMARY DIAGONAL
 	if [[ ${display[0]} == $letter && ${display[4]} == $letter && ${display[8]} == $IS_EMPTY ]]
@@ -256,13 +213,13 @@ function checkWiningMove()
 	fi
 }
 
-#FUNCTION TO BLOCK PLAYER WINNIGS
 function blockPlayerWin()
 {
 	complay=0
 	letter=$1
 	computerLetter=$2
 	index=0
+	#CHECKING FOR ROWS
 	while(($index<8))
 	do
 		#CHECKING FOR ROWS
@@ -281,8 +238,14 @@ function blockPlayerWin()
          display[$index]=$computerLetter
          compPlay=1
          return
-		#CHECKING FOR COLUMNS
-		elif [[ ${display[$index]} == $letter && ${display[$((index+3))]} == $letter && ${display[$((index+6))]} == $IS_EMPTY ]]
+		fi
+		index=$((index+3))
+	done
+	index=0
+	#CHECKING FOR COLUMNS
+	while(($index<8))
+   do
+		if [[ ${display[$index]} == $letter && ${display[$((index+3))]} == $letter && ${display[$((index+6))]} == $IS_EMPTY ]]
       then
          display[$((index+6))]=$computerLetter
          compPlay=1
@@ -298,7 +261,7 @@ function blockPlayerWin()
          compPlay=1
          return
 		fi
-		index=$((index+3))
+		index=$((index+1))
 	done
 	#CHECKING FOR PRIMARY DIAGONAL
 	if [[ ${display[0]} == $letter && ${display[4]} == $letter && ${display[8]} == $IS_EMPTY ]]
@@ -336,6 +299,33 @@ function blockPlayerWin()
 	fi
 }
 
+function fillCorners()
+{
+	letter=$1
+	compPlay=0
+	if [[ ${display[0]} == $IS_EMPTY ]]
+	then
+		display[0]=$computerLetter
+      compPlay=1
+      return
+	elif [[ ${display[2]} == $IS_EMPTY ]]
+   then
+      display[2]=$computerLetter
+      compPlay=1
+      return
+	 elif [[ ${display[6]} == $IS_EMPTY ]]
+   then
+      display[6]=$computerLetter
+      compPlay=1
+      return
+	 elif [[ ${display[8]} == $IS_EMPTY ]]
+   then
+      display[2]=$computerLetter
+      compPlay=1
+      return
+	fi
+}
+
 #COMPUTER WIN RANDOMLY PLAY ON ITS TURN
 function computerTurn()
 {
@@ -346,6 +336,10 @@ function computerTurn()
 	if(($compPlay==0))
 	then
 		blockPlayerWin $playerLetter $computerLetter
+	fi
+	if(($compPlay==0))
+	then
+		fillCorners $computerLetter
 	fi
 	if(($compPlay==0))
 	then
