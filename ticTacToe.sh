@@ -1,5 +1,5 @@
 #!/bin/bash -x
-printf "Added feature that computer will check for center. \n"
+printf "Added feature that computer will check for sides. \n"
 #CONSTANTS
 PLAYER=0
 COMPUTER=1
@@ -40,13 +40,13 @@ function assignLetter()
 	random=$((RANDOM%2))
 	case $random in
 	   $DOT)
-	   playerLetter="O"
-		computerLetter="X"
-	   ;;
+	  		playerLetter="O"
+			computerLetter="X"
+	   	;;
 	   $CROSS)
-	   playerLetter="X"
-		computerLetter="O"
-	   ;;
+	   	playerLetter="X"
+			computerLetter="O"
+	   	;;
 	esac
 }
 
@@ -56,11 +56,11 @@ function firstChance()
 	checkChance=$((RANDOM%2))
 	case $checkChance in
    	$PLAYER)
-   	echo "playerChance"
-   	;;
+   		echo "playerChance"
+   		;;
    	$COMPUTER)
-   	echo "computerChance"
-   	;;
+   		echo "computerChance"
+   		;;
 	esac
 }
 
@@ -213,6 +213,7 @@ function checkWiningMove()
 	fi
 }
 
+#FUNCTION TO BLOCK PLAYER WINNIG MOVES
 function blockPlayerWin()
 {
 	complay=0
@@ -307,44 +308,45 @@ function fillCorners()
 	randomCorner=$((RANDOM%4))
 	case $randomCorner in
 	0)
-	if [ ${display[0]} = $IS_EMPTY ]
-	then
-		display[0]=$letter
-      compPlay=1
-      return
-	else
-		fillCorners $letter
-	fi
-	;;
+		if [[ ${display[0]} == $IS_EMPTY ]]
+		then
+			display[0]=$letter
+   	   compPlay=1
+   	   return
+		else
+			fillCorners $letter
+		fi
+		;;
 	1)
-	if [ ${display[2]} = $IS_EMPTY ]
-   then
-      display[2]=$letter
-      compPlay=1
-      return
-	else
-      fillCorners $letter
-   fi 
-   ;;
+		if [[ ${display[2]} == $IS_EMPTY ]]
+   	then
+   	   display[2]=$letter
+   	   compPlay=1
+   	   return
+		else
+   	   fillCorners $letter
+  		fi 
+   	;;
 	2)
-	if [[ ${display[6]} == $IS_EMPTY ]]
-   then
-      display[6]=$letter
-      compPlay=1
-      return
-	else
-      fillCorners $letter
-   fi 
-	;;
+		if [[ ${display[6]} == $IS_EMPTY ]]
+   	then
+   	   display[6]=$letter
+      	compPlay=1
+      	return
+		else
+   	   fillCorners $letter
+   	fi 
+		;;
 	3)
-	if [ ${display[8]} = $IS_EMPTY ]
-   then
-      display[8]=$letter
-      compPlay=1
-      return
-	else
-      fillCorners $letter
-   fi 
+		if [[ ${display[8]} == $IS_EMPTY ]]
+   	then
+   	   display[8]=$letter
+   	   compPlay=1
+   	   return
+		else
+   	   fillCorners $letter
+   	fi
+		;; 
 	esac
 }
 
@@ -358,6 +360,56 @@ function takeCenter()
 		display[4]=$computerLetter
 		compPlay=1
 	fi
+}
+
+#FUNTION TO TAKE ANY ONE SIDE
+function takeSides()
+{
+	local letter=$1
+   compPlay=0
+   randomCorner=$((RANDOM%4))
+   case $randomCorner in
+   0)
+   	if [[ ${display[1]} == $IS_EMPTY ]]
+   	then
+   	   display[1]=$letter
+   	   compPlay=1
+   	   return
+   	else
+   	   fillCorners $letter
+   	fi
+   	;;
+   1)
+   	if [[ ${display[3]} == $IS_EMPTY ]]
+   	then
+   	   display[3]=$letter
+   	   compPlay=1
+   	   return
+   	else
+   	   fillCorners $letter
+   	fi 
+   	;;
+   2)
+   	if [[ ${display[5]} == $IS_EMPTY ]]
+   	then
+   	   display[5]=$letter
+   	   compPlay=1
+   	   return
+   	else
+   	   fillCorners $letter
+   	fi 
+   	;;
+   3)
+   	if [[ ${display[7]} == $IS_EMPTY ]]
+   	then
+   	   display[7]=$letter
+   	   compPlay=1
+   	   return
+   	else
+  	   	fillCorners $letter
+   	fi
+		;; 
+   esac
 }
 
 #COMPUTER TURN
@@ -382,15 +434,7 @@ function computerTurn()
 	fi
 	if(($compPlay==0))
 	then
-   	response=$((RANDOM%9))
-   	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
-   	if [ "${display[$response]}" != "X" ] && [ "${display[$response]}" != "O" ]
-   	then
-			echo "Computer turn: "
-      	display[$response]="$computerLetter"
-		else
-      	computerTurn $computerLetter
-   	fi
+		takeSides $computerLetter
 	fi
 	displayBoard
 }
