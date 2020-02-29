@@ -1,5 +1,5 @@
 #!/bin/bash -x
-printf "Added feature that computer will check for corners and fill them. \n"
+printf "Added feature that computer will check for center. \n"
 #CONSTANTS
 PLAYER=0
 COMPUTER=1
@@ -40,12 +40,12 @@ function assignLetter()
 	random=$((RANDOM%2))
 	case $random in
 	   $DOT)
-	   playerLetter=O
-		computerLetter=X
+	   playerLetter="O"
+		computerLetter="X"
 	   ;;
 	   $CROSS)
-	   playerLetter=X
-		computerLetter=O
+	   playerLetter="X"
+		computerLetter="O"
 	   ;;
 	esac
 }
@@ -70,7 +70,7 @@ function playerTurn(){
 	printf "Enter index between 0 to 8 you want to chose\n"
 	read response
 	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
-	if [ "${display[$response]}" != X ] && [ "${display[$response]}" != O ]
+	if [ "${display[$response]}" != "X" ] && [ "${display[$response]}" != "O" ]
 	then
 		display[$response]="$playerLetter"
 		displayBoard
@@ -114,7 +114,7 @@ function checkWin(){
 		flag=0
 		for(( index=0; index<${#display[@]}; index++))
 		do
-			if [ "${display[$index]}" != X ] && [ "${display[$index]}" != O ]
+			if [ "${display[$index]}" != "X" ] && [ "${display[$index]}" != "O" ]
 			then
 				flag=1
 			fi
@@ -307,9 +307,9 @@ function fillCorners()
 	randomCorner=$((RANDOM%4))
 	case $randomCorner in
 	0)
-	if [[ ${display[0]} == $IS_EMPTY ]]
+	if [ ${display[0]} = $IS_EMPTY ]
 	then
-		display[0]=$computerLetter
+		display[0]=$letter
       compPlay=1
       return
 	else
@@ -317,9 +317,9 @@ function fillCorners()
 	fi
 	;;
 	1)
-	if [[ ${display[2]} == $IS_EMPTY ]]
+	if [ ${display[2]} = $IS_EMPTY ]
    then
-      display[2]=$computerLetter
+      display[2]=$letter
       compPlay=1
       return
 	else
@@ -329,7 +329,7 @@ function fillCorners()
 	2)
 	if [[ ${display[6]} == $IS_EMPTY ]]
    then
-      display[6]=$computerLetter
+      display[6]=$letter
       compPlay=1
       return
 	else
@@ -337,15 +337,27 @@ function fillCorners()
    fi 
 	;;
 	3)
-	if [[ ${display[8]} == $IS_EMPTY ]]
+	if [ ${display[8]} = $IS_EMPTY ]
    then
-      display[2]=$computerLetter
+      display[8]=$letter
       compPlay=1
       return
 	else
       fillCorners $letter
    fi 
 	esac
+}
+
+#FUNCTION TO TAKE CENTER
+function takeCenter()
+{
+	computerLetter=$1
+	compPlay=0
+	if [[ ${display[4]} == $IS_EMPTY ]]
+	then
+		display[4]=$computerLetter
+		compPlay=1
+	fi
 }
 
 #COMPUTER TURN
@@ -366,9 +378,13 @@ function computerTurn()
 	fi
 	if(($compPlay==0))
 	then
+		takeCenter $computerLetter
+	fi
+	if(($compPlay==0))
+	then
    	response=$((RANDOM%9))
    	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
-   	if [ "${display[$response]}" != X ] && [ "${display[$response]}" != O ]
+   	if [ "${display[$response]}" != "X" ] && [ "${display[$response]}" != "O" ]
    	then
 			echo "Computer turn: "
       	display[$response]="$computerLetter"
