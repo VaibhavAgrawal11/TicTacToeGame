@@ -48,6 +48,8 @@ function assignLetter()
 			computerLetter="O"
 	   	;;
 	esac
+	echo "Computer letter:  $computerLetter"
+	echo "Player letter: $playerLetter"
 }
 
 #LOGIC TO GIVE FIRST CHANCE RANDOMLY
@@ -70,7 +72,7 @@ function playerTurn(){
 	printf "Enter index between 0 to 8 you want to chose\n"
 	read response
 	#IF NO VALUE IS ASSIGN TO THE INDEX THEN GO AHEAD ELSE RETURN FUCTION
-	if [ "${display[$response]}" != "X" ] && [ "${display[$response]}" != "O" ]
+	if [ "${display[$response]}" != "X" ] && [ "${display[$response]}" != "O" ] && [ $response -le 8 ]
 	then
 		display[$response]="$playerLetter"
 		displayBoard
@@ -125,8 +127,8 @@ function checkWin(){
 		else
 			result="change"
 		fi
-fi
-echo $result
+	fi
+	echo $result
 }
 
 #CHECKING IF COMPUTER CAN WIN NEXT MOVE
@@ -367,8 +369,8 @@ function takeSides()
 {
 	local letter=$1
    compPlay=0
-   randomCorner=$((RANDOM%4))
-   case $randomCorner in
+   randomCenter=$((RANDOM%4))
+   case $randomCenter in
    0)
    	if [[ ${display[1]} == $IS_EMPTY ]]
    	then
@@ -376,7 +378,7 @@ function takeSides()
    	   compPlay=1
    	   return
    	else
-   	   fillCorners $letter
+   	   takeSides $letter
    	fi
    	;;
    1)
@@ -386,7 +388,7 @@ function takeSides()
    	   compPlay=1
    	   return
    	else
-   	   fillCorners $letter
+   	   takeSides $letter
    	fi 
    	;;
    2)
@@ -396,8 +398,8 @@ function takeSides()
    	   compPlay=1
    	   return
    	else
-   	   fillCorners $letter
-   	fi 
+   	   takeSides $letter
+   	fi
    	;;
    3)
    	if [[ ${display[7]} == $IS_EMPTY ]]
@@ -406,9 +408,9 @@ function takeSides()
    	   compPlay=1
    	   return
    	else
-  	   	fillCorners $letter
+  	   	takeSides $letter
    	fi
-		;; 
+		;;
    esac
 }
 
